@@ -2,7 +2,8 @@ package com.baez.FintechDashboardApplication.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.math.BigDecimal; // IMPORTANTE: Solo BigDecimal per i soldi!
+import java.math.BigDecimal; 
+import java.util.List;
 
 @Entity
 @Table(name = "conti")
@@ -24,4 +25,7 @@ public class Conto {
 
     // ID del documento MongoDB per i consigli IA
     private String aiAdviceId;
+
+    @OneToMany(mappedBy = "conto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transazione> transazioni;
 }

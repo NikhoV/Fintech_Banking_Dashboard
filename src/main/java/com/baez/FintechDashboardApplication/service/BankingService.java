@@ -6,9 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baez.FintechDashboardApplication.model.Conto;
 import com.baez.FintechDashboardApplication.model.ContoMetadata;
+import com.baez.FintechDashboardApplication.model.Transazione;
 import com.baez.FintechDashboardApplication.repository.ContoRepository;
 import com.baez.FintechDashboardApplication.repository.MetadataRepository;
+import com.baez.FintechDashboardApplication.repository.TransazioneRepository;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,5 +55,51 @@ public class BankingService {
         response.put("dettagli_ia", m.getAiAdvice()); // I dati dinamici NoSQL
         
         return response;
+    }
+
+    @Autowired
+    private TransazioneRepository transazioneRepository;
+
+    @Transactional
+    public void eseguiBonifico(String ibanMittente, String ibanDestinatario, BigDecimal importo, String descrizione) {
+        
+        // 1. Recupero i conti
+        Conto mittente = contoRepository.findByIban(ibanMittente)
+                .orElseThrow(() -> new RuntimeException("Mittente non trovato"));
+        Conto destinatario = contoRepository.findByIban(ibanDestinatario)
+                .orElseThrow(() -> new RuntimeException("Destinatario non trovato"));
+
+        // 2. Controllo Saldo (Business Rule)
+        if (mittente.getSaldo().compareTo(importo) < 0) {
+            throw new RuntimeException("Saldo insufficiente per completare il bonifico!");
+        }
+
+        // 3. Aggiornamento Saldi (SQL)
+        mittente.setSaldo(mittente.getSaldo().subtract(importo));
+        destinatario.setSaldo(destinatario.getSaldo().add(importo));
+
+        contoRepository.save(mittente);
+        contoRepository.save(destinatario);
+
+        // 4. Creazione Record Storici (Le Transazioni per i grafici Angular)
+        
+        // Transazione in USCITA per il mittente
+        Transazione tUscita = new Transazione();
+        tUscita.setDescrizione("Bonifico vs " + destinatario.getTitolare() + ": " + descrizione);
+        tUscita.setImporto(importo.negate()); // Numero negativo per i grafici
+        tUscita.setDataTransazione(LocalDateTime.now());
+        tUscita.setTipo(Transazione.TipoTransazione.USCITA);
+        tUscita.setConto(mittente);
+        transazioneRepository.save(tUscita);
+
+        // Transazione in ENTRATA per il destinatario
+        Transazione tEntrata = new Transazione();
+        tEntrata.setDescrizione("Bonifico da " + mittente.getTitolare() + ": " + descrizione);
+        tEntrata.setImporto(importo);
+        tEntrata.setDataTransazione(LocalDateTime.now());
+        tEntrata.setTipo(Transazione.TipoTransazione.ENTRATA);
+        tEntrata.setConto(destinatario);
+        transazioneRepository.save(tEntrata);
+
     }
 }

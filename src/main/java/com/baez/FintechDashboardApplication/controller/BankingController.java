@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.baez.FintechDashboardApplication.dto.ContoRequest;
+import com.baez.FintechDashboardApplication.dto.TransferRequest;
 import com.baez.FintechDashboardApplication.model.Conto;
 import com.baez.FintechDashboardApplication.model.ContoMetadata;
 import com.baez.FintechDashboardApplication.service.BankingService;
@@ -37,4 +38,15 @@ public class BankingController {
     public Map<String, Object> getById(@PathVariable Long id) {
         return bankingService.getContoCompleto(id); 
     }
+
+    @PostMapping("/transfer")
+    public Map<String, String> transfer(@RequestBody TransferRequest request) {
+        bankingService.eseguiBonifico(
+        request.getIbanMittente(), 
+        request.getIbanDestinatario(), 
+        request.getImporto(), 
+        request.getDescrizione()
+    );
+    return Map.of("message", "Bonifico eseguito con successo!");
+}
 }
