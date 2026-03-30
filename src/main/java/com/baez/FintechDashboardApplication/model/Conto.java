@@ -1,4 +1,4 @@
-package com.baez.smart_inventory.model;
+package com.baez.FintechDashboardApplication.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

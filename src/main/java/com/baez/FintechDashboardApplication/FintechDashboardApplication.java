@@ -1,13 +1,13 @@
-package com.baez.smart_inventory;
+package com.baez.FintechDashboardApplication;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SmartInventoryApplication {
+public class FintechDashboardApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SmartInventoryApplication.class, args);
+		SpringApplication.run(FintechDashboardApplication.class, args);
 	}
 
 }

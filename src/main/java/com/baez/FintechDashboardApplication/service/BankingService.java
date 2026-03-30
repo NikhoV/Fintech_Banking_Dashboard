@@ -1,12 +1,13 @@
-package com.baez.smart_inventory.service;
+package com.baez.FintechDashboardApplication.service;
 
-import com.baez.smart_inventory.model.Conto;
-import com.baez.smart_inventory.model.ContoMetadata;
-import com.baez.smart_inventory.repository.ContoRepository;
-import com.baez.smart_inventory.repository.MetadataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.baez.FintechDashboardApplication.model.Conto;
+import com.baez.FintechDashboardApplication.model.ContoMetadata;
+import com.baez.FintechDashboardApplication.repository.ContoRepository;
+import com.baez.FintechDashboardApplication.repository.MetadataRepository;
 
 import java.util.HashMap;
 import java.util.Map;

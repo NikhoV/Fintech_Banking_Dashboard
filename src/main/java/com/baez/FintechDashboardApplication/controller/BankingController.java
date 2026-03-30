@@ -1,11 +1,13 @@
-package com.baez.smart_inventory.controller;
+package com.baez.FintechDashboardApplication.controller;
 
-import com.baez.smart_inventory.dto.ContoRequest;
-import com.baez.smart_inventory.model.Conto;
-import com.baez.smart_inventory.model.ContoMetadata;
-import com.baez.smart_inventory.service.BankingService; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import com.baez.FintechDashboardApplication.dto.ContoRequest;
+import com.baez.FintechDashboardApplication.model.Conto;
+import com.baez.FintechDashboardApplication.model.ContoMetadata;
+import com.baez.FintechDashboardApplication.service.BankingService;
+
 import java.util.Map;
 
 @RestController

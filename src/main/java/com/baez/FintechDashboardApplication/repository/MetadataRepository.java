@@ -1,8 +1,9 @@
-package com.baez.smart_inventory.repository;
+package com.baez.FintechDashboardApplication.repository;
 
-import com.baez.smart_inventory.model.ContoMetadata;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
+
+import com.baez.FintechDashboardApplication.model.ContoMetadata;
 
 @Repository
 public interface MetadataRepository extends MongoRepository<ContoMetadata, String> {

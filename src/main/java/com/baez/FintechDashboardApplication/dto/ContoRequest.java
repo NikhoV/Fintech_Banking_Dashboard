@@ -1,4 +1,4 @@
-package com.baez.smart_inventory.dto;
+package com.baez.FintechDashboardApplication.dto;
 
 import lombok.Data;
 import java.math.BigDecimal;

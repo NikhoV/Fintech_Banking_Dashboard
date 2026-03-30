@@ -1,4 +1,4 @@
-package com.baez.smart_inventory.model;
+package com.baez.FintechDashboardApplication.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
