@@ -1,27 +1,54 @@
+package com.baez.smart_inventory.service;
+
+import com.baez.smart_inventory.model.Conto;
+import com.baez.smart_inventory.model.ContoMetadata;
+import com.baez.smart_inventory.repository.ContoRepository;
+import com.baez.smart_inventory.repository.MetadataRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class BankingService {
 
     @Autowired
     private ContoRepository contoRepository;
-    
+
     @Autowired
-    private MetadataRepository metadataRepository; // Il tuo vecchio amico per MongoDB
+    private MetadataRepository metadataRepository;
 
+    // 1. Metodo per CREARE il conto (Salva su MySQL e MongoDB)
     @Transactional
-    public void eseguiBonifico(Long daId, Long aId, BigDecimal importo) {
-        Conto mittente = contoRepository.findById(daId).orElseThrow();
-        Conto destinatario = contoRepository.findById(aId).orElseThrow();
-
-        if (mittente.getSaldo().compareTo(importo) < 0) {
-            throw new RuntimeException("Saldo insufficiente!");
-        }
-
-        mittente.setSaldo(mittente.getSaldo().subtract(importo));
-        destinatario.setSaldo(destinatario.getSaldo().add(importo));
-
-        contoRepository.save(mittente);
-        contoRepository.save(destinatario);
+    public Conto creaContoCompleto(Conto conto, ContoMetadata metadata) {
+        // Salvo prima i metadati su MongoDB per ottenere l'ID
+        ContoMetadata savedMetadata = metadataRepository.save(metadata);
         
-        // Qui scatterà la logica IA asincrona che scriverà su MongoDB
+        // Collego l'ID di MongoDB al record MySQL
+        conto.setAiAdviceId(savedMetadata.getId());
+        
+        return contoRepository.save(conto);
+    }
+
+    // 2. Metodo per LEGGERE il conto (Unisce MySQL + MongoDB)
+    public Map<String, Object> getContoCompleto(Long id) {
+        Conto c = contoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Conto non trovato con ID: " + id));
+
+        // Cerco i dettagli extra su MongoDB
+        ContoMetadata m = metadataRepository.findById(c.getAiAdviceId())
+                .orElse(new ContoMetadata());
+
+        // Unione dei dati per il Frontend Angular
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", c.getId());
+        response.put("iban", c.getIban());
+        response.put("titolare", c.getTitolare());
+        response.put("saldo", c.getSaldo());
+        response.put("dettagli_ia", m.getAiAdvice()); // I dati dinamici NoSQL
+        
+        return response;
     }
 }
