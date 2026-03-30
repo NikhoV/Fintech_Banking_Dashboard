@@ -1,0 +1,26 @@
+services:
+  # Servizio 1: Il Database Relazionale (Solidità)
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql_inventory
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: smart_inventory_db
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # Servizio 2: Il Database Documentale (Flessibilità per l'IA)
+  mongo-db:
+    image: mongo:latest
+    container_name: mongo_inventory
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+# Volumi: servono a non perdere i dati quando spegni il PC!
+volumes:
+  mysql_data:
+  mongo_data:
